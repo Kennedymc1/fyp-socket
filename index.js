@@ -47,28 +47,32 @@ io.on('connection', (socket) => {
   });
 
   socket.on("liveStream", async (data) => {
-    console.log("received stream")
-    var bytes = new Uint8Array(data);
+    try {
+      console.log("received stream")
+      var bytes = new Uint8Array(data);
 
-    const result = await faceapiService.detect(bytes);
+      const result = await faceapiService.detect(bytes);
 
-    let age, gender
+      let age, gender
 
-    if(result.length == 1){
-      age = result[0].age
-      gender = result[0].gender
+      if (result.length == 1) {
+        age = result[0].age
+        gender = result[0].gender
 
+      }
+
+      io.emit('faceData', {
+        detectedFaces: result.length,
+        age,
+        gender
+      })
+
+      //send the same data out
+      io.emit('showStream', data)
+
+    } catch (e) {
+      console.log({ e })
     }
-
-    io.emit('faceData', {
-      detectedFaces: result.length,
-      age,
-      gender
-    })
-
-    //send the same data out
-    io.emit('showStream', data)
-    return
   }
   )
 })
