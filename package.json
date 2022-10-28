@@ -1,0 +1,21 @@
+{
+  "name": "socket-microservice",
+  "version": "1.0.0",
+  "description": "microservice to handle all the sockets",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Mundia",
+  "license": "ISC",
+  "dependencies": {
+    "@tensorflow/tfjs-node": "^3.21.1",
+    "@vladmandic/face-api": "^1.7.6",
+    "dotenv": "^16.0.2",
+    "express": "^4.18.1",
+    "express-fileupload": "^1.4.0",
+    "nodemon": "^2.0.19",
+    "socket.io": "^4.5.1"
+  }
+}
