@@ -47,6 +47,7 @@ io.on('connection', (socket) => {
 
   socket.on("liveStream", (data) => {
 
+    
     console.log({ data })
     //send the same data out
     io.emit('showStream', data)
