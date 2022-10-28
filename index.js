@@ -10,7 +10,7 @@ app.use(fileUpload());
 app.post("/upload", async (req, res) => {
   const { file } = req.files;
 
-  console.log({file})
+  console.log({ file })
   const result = await faceapiService.detect(file.data);
 
   res.json({
@@ -46,9 +46,17 @@ io.on('connection', (socket) => {
   });
 
   socket.on("liveStream", (data) => {
+    var binary = '';
+    var bytes = new Uint8Array(buffer);
+    var len = bytes.byteLength;
+    for (var i = 0; i < len; i++) {
+      binary += String.fromCharCode(bytes[i]);
+    }
 
+    const result = await faceapiService.detect(binary);
 
-    console.log({ data })
+    console.log({ detectedFaces: result.length })
+
     //send the same data out
     io.emit('showStream', data)
     return
