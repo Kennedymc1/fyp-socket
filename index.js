@@ -77,6 +77,8 @@ io.on('connection', (socket) => {
   )
 })
 
-server.listen(4001, () => {
-  console.log('listening socket microservice on port ' + 4001);
+const port = process.env.PORT || 80
+
+server.listen(port, () => {
+  console.log('listening socket microservice on port ' + port);
 });
