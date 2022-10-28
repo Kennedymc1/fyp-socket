@@ -47,7 +47,7 @@ io.on('connection', (socket) => {
 
   socket.on("liveStream", (data) => {
 
-    
+
     console.log({ data })
     //send the same data out
     io.emit('showStream', data)
@@ -56,6 +56,6 @@ io.on('connection', (socket) => {
   )
 })
 
-server.listen(process.env.SOCKET_PORT, () => {
-  console.log('listening socket microservice on port ' + process.env.SOCKET_PORT);
+server.listen(process.env.PORT, () => {
+  console.log('listening socket microservice on port ' + process.env.PORT);
 });
