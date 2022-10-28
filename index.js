@@ -50,13 +50,13 @@ io.on('connection', (socket) => {
     var binary = '';
     var bytes = new Uint8Array(buffer);
     var len = bytes.byteLength;
-    for (var i = 0; i < len; i++) {
-      binary += String.fromCharCode(bytes[i]);
-    }
+    // for (var i = 0; i < len; i++) {
+    //   binary += String.fromCharCode(bytes[i]);
+    // }
 
-    const result = await faceapiService.detect(binary);
+    // const result = await faceapiService.detect(bytes);
 
-    console.log({ detectedFaces: result.length })
+    // console.log({ detectedFaces: result.length })
 
     //send the same data out
     io.emit('showStream', data)
