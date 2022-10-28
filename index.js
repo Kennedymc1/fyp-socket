@@ -48,15 +48,15 @@ io.on('connection', (socket) => {
   socket.on("liveStream", async (data) => {
     console.log("received stream")
     var binary = '';
-    var bytes = new Uint8Array(buffer);
+    var bytes = new Uint8Array(data);
     var len = bytes.byteLength;
     // for (var i = 0; i < len; i++) {
     //   binary += String.fromCharCode(bytes[i]);
     // }
 
-    // const result = await faceapiService.detect(bytes);
+    const result = await faceapiService.detect(bytes);
 
-    // console.log({ detectedFaces: result.length })
+    console.log({ detectedFaces: result.length })
 
     //send the same data out
     io.emit('showStream', data)
