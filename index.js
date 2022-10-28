@@ -45,7 +45,8 @@ io.on('connection', (socket) => {
     console.log('user disconnected');
   });
 
-  socket.on("liveStream", (data) => {
+  socket.on("liveStream", async (data) => {
+    console.log("received stream")
     var binary = '';
     var bytes = new Uint8Array(buffer);
     var len = bytes.byteLength;
