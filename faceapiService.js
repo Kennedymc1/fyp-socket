@@ -5,6 +5,11 @@ const tf = require("@tensorflow/tfjs-node");
 const faceapi = require("@vladmandic/face-api/dist/face-api.node.js");
 const modelPathRoot = "./models";
 
+const canvas = require("canvas");
+const { saveFile } = require("./saveFile");
+const { Canvas, Image, ImageData } = canvas;
+faceapi.env.monkeyPatch({ Canvas, Image, ImageData });
+
 let optionsSSDMobileNet;
 
 async function image(file) {
@@ -17,7 +22,7 @@ async function image(file) {
 }
 
 async function detect(tensor) {
-    const result = await faceapi.detectAllFaces(tensor, optionsSSDMobileNet).withAgeAndGender()
+    const result = await faceapi.detectAllFaces(tensor, optionsSSDMobileNet).withFaceLandmarks().withFaceDescriptors().withAgeAndGender()
 
     return result;
 }
@@ -39,12 +44,13 @@ async function main(file) {
     const modelPath = path.join(__dirname, modelPathRoot);
     await faceapi.nets.ssdMobilenetv1.loadFromDisk(modelPath);
     await faceapi.nets.ageGenderNet.loadFromDisk(modelPath);
-    // await faceapi.nets.faceRecognitionNet.loadFromDisk(modelPath);
+    await faceapi.nets.faceLandmark68Net.loadFromDisk(modelPath)
+    await faceapi.nets.faceRecognitionNet.loadFromDisk(modelPath);
 
 
 
     optionsSSDMobileNet = new faceapi.SsdMobilenetv1Options({
-        minConfidence: 0.5,
+        minConfidence: 0.7,
     });
 
     const tensor = await image(file);
@@ -53,9 +59,49 @@ async function main(file) {
 
     tensor.dispose();
 
-    return result;
+
+    const canvasImg = await canvas.loadImage(file);
+    const out = await faceapi.createCanvasFromMedia(canvasImg);
+    faceapi.draw.drawDetections(out, result);
+    faceapi.draw.drawFaceLandmarks(out, result)
+
+    //TODO COMMENT THIS WHEN USING THE SOCKET, ITS ONLY COMMENTED OUT FOR TESTING PURPOSES
+    saveFile("image.jpg", out.toBuffer("image/jpeg"));
+    console.log(`done, saved results to`);
+
+    return {
+        result,
+        image: out.toBuffer("image/jpeg")
+    };
 }
 
+
+/**
+ * 
+ * @param {img} existingImage image file we are comparing with 
+ * @param {obj} result the result from the processed image from the server
+ * 
+ */
+const matchFace = async ({ existingImage, result }) => {
+
+    const faceMatcher = new faceapi.FaceMatcher(result)
+    const tensor = await image(existingImage);
+
+    const singleResult = await faceapi
+        .detectSingleFace(tensor)
+        .withFaceLandmarks()
+        .withFaceDescriptor()
+
+      
+    if (singleResult) {
+        const bestMatch = faceMatcher.findBestMatch(singleResult.descriptor)
+        return bestMatch
+    }
+
+    return null
+
+}
 module.exports = {
     detect: main,
+    matchFace
 };

@@ -4,20 +4,52 @@ const http = require('http');
 const dotenv = require('dotenv');
 const fileUpload = require("express-fileupload");
 const faceapiService = require('./faceapiService');
+const { matchFace } = require('./faceapiService');
+
+
+const MAX_ROLL = 23
+const MIN_ROLL = -23
+const MAX_PITCH = 17
+const MIN_PITCH = -17
+const MAX_YAW = 300
+const MIN_YAW = -300
+
+const MATCH_MAX_LIMIT = 0.45
 
 app.use(fileUpload());
 
 app.post("/upload", async (req, res) => {
-  const { file } = req.files;
+  const { file, existingImage } = req.files;
 
-  const result = await faceapiService.detect(file.data);
+  const response = await faceapiService.detect(file.data);
 
-  console.log({ result })
+  const faceMatch = await matchFace({ existingImage: existingImage.data, result: response.result })
 
-  res.json({
-    detectedFaces: result.length,
-  });
+  console.log({ result: response.result })
+
+  const detectedFaces = response.result.length
+
+  if (detectedFaces == 1) {
+    res.json({
+      detectedFaces,
+      faceMatch,
+      numberOfLandmarks: response.result[0].landmarks._positions.length,
+      numberOfUnshiftedLandmarks: response.result[0].unshiftedLandmarks._positions.length,
+      angle: response.result[0].angle
+    });
+  } else {
+    res.json({
+      detectedFaces,
+      faceMatch
+    });
+  }
 });
+
+app.get("/trigger", async (req, res) => {
+  io.emit("trigger", { trigger: true })
+  res.send("triggered")
+});
+
 
 dotenv.config({ path: '../.env' });
 
@@ -68,7 +100,7 @@ io.on('connection', (socket) => {
       })
 
       //send the same data out
-      io.emit('showStream', data)
+      io.emit('showStream', result.image)
 
     } catch (e) {
       console.log({ e })
