@@ -94,13 +94,12 @@ io.on('connection', (socket) => {
 
       var bytes = new Uint8Array(data);
 
-      var decoder = new TextDecoder('utf8');
-      var b64encoded = btoa(decoder.decode(bytes));
+      var b64 = Buffer.from(bytes).toString('base64');
 
       // saveFile("image.jpg", bytes.buffer)
       // console.log("image saved")
 
-      const response = await faceapiService.detect(b64encoded);
+      const response = await faceapiService.detect(b64);
 
       if (response) {
         let age, gender
