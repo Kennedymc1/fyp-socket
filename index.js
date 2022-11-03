@@ -24,6 +24,7 @@ app.use(fileUpload());
 
 app.use(express.static('out'))
 
+
 app.post("/upload", async (req, res) => {
   const { file, existingImage } = req.files;
 
@@ -76,6 +77,81 @@ const io = require("socket.io")(server, {
 });
 
 
+app.post("/image-upload", async (req, res) => {
+  const data = req.params.image
+
+  try {
+    console.log("received stream")
+
+    var bytes = new Uint8Array(data);
+
+    //write the file
+    let bufferData = bytes.buffer
+    bufferData = Buffer.from(bufferData);
+    fs.writeFile(`out/image.jpg`, bufferData, err => {
+      if (err) {
+        console.log({ writingFileError: err });
+      } else {
+      }
+    });
+    ///
+
+    const response = await faceapiService.detect(bytes);
+
+    if (response) {
+      let age, gender
+
+      if (response.result.length === 1) {
+
+        const face = response.result[0]
+        age = face.age
+        gender = face.gender
+
+        const angle = face.angle
+
+        let approved = true
+        if (angle.roll > MAX_ROLL || angle.roll < MIN_ROLL) {
+          console.log("wrong roll " + angle.roll)
+          approved = false
+        }
+
+        if (angle.yaw > MAX_YAW || angle.yaw < MIN_YAW) {
+          console.log("wrong yaw " + angle.yaw)
+          approved = false
+        }
+
+        if (angle.pitch > MAX_PITCH || angle.pitch < MIN_PITCH) {
+          console.log("wrong pitch " + angle.pitch)
+          approved = false
+        }
+
+        //todo scan through banned images in database to check for a face match
+        if (approved) {
+          console.log("approved face")
+          io.emit("approved", { approved: true })
+        }
+
+      }
+
+
+      io.emit('faceData', {
+        detectedFaces: response.result.length,
+        age,
+        gender
+      })
+
+      //send the same data out
+      io.emit('showStream', response.image)
+    } else {
+      console.log("image null")
+    }
+
+  } catch (e) {
+    console.log({ e })
+  }
+
+})
+
 
 
 /**
@@ -88,79 +164,6 @@ io.on('connection', (socket) => {
   socket.on('disconnect', () => {
     console.log('user disconnected');
   });
-
-  socket.on("liveStream", async (data) => {
-    try {
-      console.log("received stream")
-
-      var bytes = new Uint8Array(data);
-
-      //write the file
-      let bufferData = bytes.buffer
-      bufferData = Buffer.from(bufferData);
-      fs.writeFile(`out/image.jpg`, bufferData, err => {
-        if (err) {
-          console.log({ writingFileError: err });
-        } else {
-        }
-      });
-      ///
-
-      const response = await faceapiService.detect(bytes);
-
-      if (response) {
-        let age, gender
-
-        if (response.result.length === 1) {
-
-          const face = response.result[0]
-          age = face.age
-          gender = face.gender
-
-          const angle = face.angle
-
-          let approved = true
-          if (angle.roll > MAX_ROLL || angle.roll < MIN_ROLL) {
-            console.log("wrong roll " + angle.roll)
-            approved = false
-          }
-
-          if (angle.yaw > MAX_YAW || angle.yaw < MIN_YAW) {
-            console.log("wrong yaw " + angle.yaw)
-            approved = false
-          }
-
-          if (angle.pitch > MAX_PITCH || angle.pitch < MIN_PITCH) {
-            console.log("wrong pitch " + angle.pitch)
-            approved = false
-          }
-
-          //todo scan through banned images in database to check for a face match
-          if (approved) {
-            console.log("approved face")
-            io.emit("approved", { approved: true })
-          }
-
-        }
-
-
-        io.emit('faceData', {
-          detectedFaces: response.result.length,
-          age,
-          gender
-        })
-
-        //send the same data out
-        io.emit('showStream', response.image)
-      } else {
-        console.log("image null")
-      }
-
-    } catch (e) {
-      console.log({ e })
-    }
-  }
-  )
 })
 
 const port = process.env.PORT || 4000
