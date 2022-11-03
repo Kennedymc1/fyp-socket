@@ -74,7 +74,7 @@ async function main(file) {
     faceapi.draw.drawFaceLandmarks(out, result)
     console.log("completed canvas draw")
 
-    // saveFile("image.jpg", out.toBuffer("image/jpeg"));
+    saveFile("image.jpg", out.toBuffer("image/jpeg"));
 
     return {
         result,
