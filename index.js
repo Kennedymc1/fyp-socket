@@ -121,7 +121,7 @@ app.post("/image-upload", async (req, res) => {
         if (approved) {
           console.log("approved face")
           io.emit("approved", { approved: true })
-          await saveImageFile(file)
+          await saveImageFile({ imageFile: file, result: response.result })
         }
 
       }
@@ -169,22 +169,33 @@ server.listen(port, () => {
 
 
 
-const saveImageFile = async (imageFile) => {
+const saveImageFile = async ({ imageFile, result }) => {
+
+  // first check if the recent entry is of the same user
+  const mostRecentEntry = await EntryModel.find().sort({ _id: -1 }).limit(1);
+
+  const faceMatch = await matchFace({ existingImage, result })
+
   console.log('starting save image to db')
 
-  const encode_img = imageFile.data.toString('base64');
+  if (faceMatch && faceMatch._distance <= MATCH_MAX_LIMIT) {
+    console.log("face matches most recent entry")
+  } else {
 
-  const imageModel = {
-    name: imageFile.name,
-    data: encode_img
+    const encode_img = imageFile.data.toString('base64');
+
+    const imageModel = {
+      name: imageFile.name,
+      data: encode_img
+    }
+
+
+    const model = new EntryModel()
+    model.image = imageModel
+    // model.temperature = temperature
+
+    await model.save()
+
+    console.log('image saved in db!');
   }
-
-
-  const model = new EntryModel()
-  model.image = imageModel
-  // model.temperature = temperature
-
-  await model.save()
-
-  console.log('image saved in db!');
 }
