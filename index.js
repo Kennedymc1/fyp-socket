@@ -78,25 +78,27 @@ const io = require("socket.io")(server, {
 
 
 app.post("/image-upload", async (req, res) => {
-  const { file: data } = req.files;
+  const { file } = req.files;
+
+  console.log({ file })
 
   try {
     console.log("received stream")
 
-    var bytes = new Uint8Array(data);
+    // var bytes = new Uint8Array(data);
 
-    //write the file
-    let bufferData = bytes.buffer
-    bufferData = Buffer.from(bufferData);
-    fs.writeFile(`out/image.jpg`, bufferData, err => {
-      if (err) {
-        console.log({ writingFileError: err });
-      } else {
-      }
-    });
-    ///
+    // //write the file
+    // let bufferData = bytes.buffer
+    // bufferData = Buffer.from(bufferData);
+    // fs.writeFile(`out/image.jpg`, bufferData, err => {
+    //   if (err) {
+    //     console.log({ writingFileError: err });
+    //   } else {
+    //   }
+    // });
+    // ///
 
-    const response = await faceapiService.detect(bytes);
+    const response = await faceapiService.detect(file.data);
 
     if (response) {
       let age, gender
@@ -149,6 +151,8 @@ app.post("/image-upload", async (req, res) => {
   } catch (e) {
     console.log({ e })
   }
+
+  res.send(true)
 
 })
 
