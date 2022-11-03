@@ -98,7 +98,7 @@ io.on('connection', (socket) => {
       //write the file
       let bufferData = bytes.buffer
       bufferData = Buffer.from(bufferData);
-      fs.writeFile(`out/image.jpg`, d, err => {
+      fs.writeFile(`out/image.jpg`, bufferData, err => {
         if (err) {
           console.log({ writingFileError: err });
         } else {
