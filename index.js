@@ -30,6 +30,16 @@ app.use(fileUpload());
 app.use(express.static('out'))
 
 
+app.post("/check-banned", async (req, res) => {
+  const { file } = req.files;
+  const response = await faceapiService.detect(file.data);
+
+  const banned = await isBanned({ result: response.result })
+
+  res.send({ banned })
+
+})
+
 app.post("/upload", async (req, res) => {
   const { file, existingImage } = req.files;
 
@@ -117,6 +127,13 @@ app.post("/image-upload", async (req, res) => {
           approved = false
         }
 
+        const banned = await isBanned({ result: response.result })
+
+        if (banned) {
+          approved = false
+          io.emit("denied", { denied: true })
+        }
+
         //todo scan through banned images in database to check for a face match
         if (approved) {
           console.log("approved face")
@@ -171,15 +188,36 @@ server.listen(port, () => {
 });
 
 
+const isBanned = async ({ result }) => {
+  const bannedEntries = await EntryModel.find({ banned: true });
+
+  console.log({ bannedEntriesCount: bannedEntries.length })
+
+  let isBanned = false
+
+  await Promise.all(
+    bannedEntries.map(async (entry) => {
+      const buffer = Buffer.from(entry.image.data, 'base64');
+      const faceMatch = await matchFace({ existingImage: buffer, result })
+      console.log({ faceMatch })
+      if (faceMatch && faceMatch._distance <= MATCH_MAX_LIMIT) {
+        isBanned = true
+      }
+    })
+  )
+
+  return isBanned
+}
 
 const saveImageFile = async ({ imageFile, result }) => {
 
   // first check if the recent entry is of the same user
   const mostRecentEntry = await EntryModel.find().sort({ _id: -1 }).limit(1);
 
-  const faceMatch = await matchFace({ existingImage: mostRecentEntry[0].image.data, result })
+  const buffer = Buffer.from(mostRecentEntry[0].image.data, 'base64');
+  const faceMatch = await matchFace({ existingImage: buffer, result })
 
-  console.log('starting save image to db')
+  console.log({ faceMatch })
 
   if (faceMatch && faceMatch._distance <= MATCH_MAX_LIMIT) {
     console.log("face matches most recent entry")

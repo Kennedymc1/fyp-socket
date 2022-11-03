@@ -6,7 +6,8 @@ const schema = mongoose.Schema({
 		data: String,
 		contentType: String
 	},
-	temperature: String
+	temperature: String,
+	banned: Boolean
 });
 
 const model = mongoose.model('entries', schema);

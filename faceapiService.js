@@ -94,7 +94,6 @@ const matchFace = async ({ existingImage, result }) => {
         .withFaceLandmarks()
         .withFaceDescriptor()
 
-
     if (singleResult) {
         const bestMatch = faceMatcher.findBestMatch(singleResult.descriptor)
         return bestMatch
