@@ -78,7 +78,7 @@ const io = require("socket.io")(server, {
 
 
 app.post("/image-upload", async (req, res) => {
-  const data = req.params.image
+  const { file: data } = req.files;
 
   try {
     console.log("received stream")
