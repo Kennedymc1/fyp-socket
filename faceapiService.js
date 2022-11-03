@@ -57,6 +57,7 @@ async function main(file) {
     });
 
     const tensor = await image(file);
+    if(!tensor) return
     const result = await detect(tensor);
     console.log("Detected faces:", result.length);
 
@@ -94,7 +95,7 @@ const matchFace = async ({ existingImage, result }) => {
 
     const faceMatcher = new faceapi.FaceMatcher(result)
     const tensor = await image(existingImage);
-
+    if(!tensor) return
     const singleResult = await faceapi
         .detectSingleFace(tensor)
         .withFaceLandmarks()
