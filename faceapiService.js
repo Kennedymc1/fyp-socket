@@ -13,12 +13,16 @@ faceapi.env.monkeyPatch({ Canvas, Image, ImageData });
 let optionsSSDMobileNet;
 
 async function image(file) {
-    const decoded = tf.node.decodeImage(file);
-    const casted = decoded.toFloat();
-    const result = casted.expandDims(0);
-    decoded.dispose();
-    casted.dispose();
-    return result;
+    try {
+        const decoded = tf.node.decodeImage(file);
+        const casted = decoded.toFloat();
+        const result = casted.expandDims(0);
+        decoded.dispose();
+        casted.dispose();
+        return result;
+    } catch (e) {
+        return null
+    }
 }
 
 async function detect(tensor) {
@@ -92,7 +96,7 @@ const matchFace = async ({ existingImage, result }) => {
         .withFaceLandmarks()
         .withFaceDescriptor()
 
-      
+
     if (singleResult) {
         const bestMatch = faceMatcher.findBestMatch(singleResult.descriptor)
         return bestMatch
