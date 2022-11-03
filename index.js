@@ -92,8 +92,10 @@ io.on('connection', (socket) => {
 
       let age, gender
 
+      console.log({ length: response.result.length })
 
-      if (response.result.length == 1) {
+      if (response.result.length === 1) {
+
         const face = response.result[0]
         age = face.age
         gender = face.gender
