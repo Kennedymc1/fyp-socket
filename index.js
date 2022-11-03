@@ -102,7 +102,6 @@ io.on('connection', (socket) => {
         if (err) {
           console.log({ writingFileError: err });
         } else {
-          console.log('File created successfully!');
         }
       });
       ///
@@ -112,8 +111,6 @@ io.on('connection', (socket) => {
       if (response) {
         let age, gender
 
-        console.log({ length: response.result.length })
-
         if (response.result.length === 1) {
 
           const face = response.result[0]
@@ -121,7 +118,7 @@ io.on('connection', (socket) => {
           gender = face.gender
 
           const angle = face.angle
-          
+
           let approved = true
           if (angle.roll > MAX_ROLL || angle.roll < MIN_ROLL) {
             console.log("wrong roll " + angle.roll)

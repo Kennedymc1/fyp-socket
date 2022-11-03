@@ -69,7 +69,7 @@ async function main(file) {
     faceapi.draw.drawDetections(out, result);
     faceapi.draw.drawFaceLandmarks(out, result)
 
-    // saveFile("image.jpg", out.toBuffer("image/jpeg"));
+    saveFile("image.jpg", out.toBuffer("image/jpeg"));
 
     return {
         result,
