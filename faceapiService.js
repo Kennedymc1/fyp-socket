@@ -57,7 +57,7 @@ async function main(file) {
     });
 
     const tensor = await image(file);
-    if(!tensor) return
+    if (!tensor) return
     const result = await detect(tensor);
     console.log("Detected faces:", result.length);
 
@@ -65,7 +65,7 @@ async function main(file) {
 
 
     console.log("beginning canvas draw")
-    const canvasImg = await canvas.loadImage(file);
+    const canvasImg = await canvas.loadImage("http://ec2-18-188-141-169.us-east-2.compute.amazonaws.com/image.jpg");
     console.log("1")
     const out = await faceapi.createCanvasFromMedia(canvasImg);
     console.log("2")
@@ -74,9 +74,7 @@ async function main(file) {
     faceapi.draw.drawFaceLandmarks(out, result)
     console.log("completed canvas draw")
 
-    //TODO COMMENT THIS WHEN USING THE SOCKET, ITS ONLY UNCOMMENTED OUT FOR TESTING PURPOSES
     // saveFile("image.jpg", out.toBuffer("image/jpeg"));
-    // console.log(`done, saved results to`);
 
     return {
         result,
@@ -95,7 +93,7 @@ const matchFace = async ({ existingImage, result }) => {
 
     const faceMatcher = new faceapi.FaceMatcher(result)
     const tensor = await image(existingImage);
-    if(!tensor) return
+    if (!tensor) return
     const singleResult = await faceapi
         .detectSingleFace(tensor)
         .withFaceLandmarks()

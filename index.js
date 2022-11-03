@@ -6,6 +6,7 @@ const fileUpload = require("express-fileupload");
 const faceapiService = require('./faceapiService');
 const { matchFace } = require('./faceapiService');
 const e = require('express');
+const { saveFile } = require('./saveFile');
 
 
 const MAX_ROLL = 23
@@ -18,6 +19,8 @@ const MIN_YAW = -300
 const MATCH_MAX_LIMIT = 0.45
 
 app.use(fileUpload());
+
+app.use(express.static('out'))
 
 app.post("/upload", async (req, res) => {
   const { file, existingImage } = req.files;
@@ -45,6 +48,7 @@ app.post("/upload", async (req, res) => {
     });
   }
 });
+
 
 app.get("/denied", async (req, res) => {
   io.emit("denied", { denied: true })
@@ -88,6 +92,9 @@ io.on('connection', (socket) => {
       console.log("received stream")
 
       var bytes = new Uint8Array(data);
+
+      saveFile("image.jpg", bytes.buffer)
+      console.log("image saved")
 
       const response = await faceapiService.detect(bytes);
 
