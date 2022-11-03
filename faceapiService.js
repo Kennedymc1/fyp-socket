@@ -64,7 +64,7 @@ async function main(file) {
     tensor.dispose();
 
 
-    const canvasImg = await canvas.loadImage("http://ec2-18-188-141-169.us-east-2.compute.amazonaws.com/image.jpg");
+    const canvasImg = await canvas.loadImage(file);
     const out = await faceapi.createCanvasFromMedia(canvasImg);
     faceapi.draw.drawDetections(out, result);
     faceapi.draw.drawFaceLandmarks(out, result)
