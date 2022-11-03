@@ -120,8 +120,11 @@ app.post("/image-upload", async (req, res) => {
         //todo scan through banned images in database to check for a face match
         if (approved) {
           console.log("approved face")
-          io.emit("approved", { approved: true })
-          await saveImageFile({ imageFile: file, result: response.result })
+          const saved = await saveImageFile({ imageFile: file, result: response.result })
+
+          if (saved) {
+            io.emit("approved", { approved: true })
+          }
         }
 
       }
@@ -174,12 +177,13 @@ const saveImageFile = async ({ imageFile, result }) => {
   // first check if the recent entry is of the same user
   const mostRecentEntry = await EntryModel.find().sort({ _id: -1 }).limit(1);
 
-  const faceMatch = await matchFace({ existingImage, result })
+  const faceMatch = await matchFace({ existingImage: mostRecentEntry[0].image.data, result })
 
   console.log('starting save image to db')
 
   if (faceMatch && faceMatch._distance <= MATCH_MAX_LIMIT) {
     console.log("face matches most recent entry")
+    return false
   } else {
 
     const encode_img = imageFile.data.toString('base64');
@@ -197,5 +201,6 @@ const saveImageFile = async ({ imageFile, result }) => {
     await model.save()
 
     console.log('image saved in db!');
+    return true
   }
 }
