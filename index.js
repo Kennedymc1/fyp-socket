@@ -7,6 +7,7 @@ const faceapiService = require('./faceapiService');
 const { matchFace } = require('./faceapiService');
 const e = require('express');
 const { saveFile } = require('./saveFile');
+const { btoa } = require('buffer');
 
 
 const MAX_ROLL = 23
