@@ -80,23 +80,8 @@ const io = require("socket.io")(server, {
 app.post("/image-upload", async (req, res) => {
   const { file } = req.files;
 
-  console.log({ file })
-
   try {
     console.log("received stream")
-
-    // var bytes = new Uint8Array(data);
-
-    // //write the file
-    // let bufferData = bytes.buffer
-    // bufferData = Buffer.from(bufferData);
-    // fs.writeFile(`out/image.jpg`, bufferData, err => {
-    //   if (err) {
-    //     console.log({ writingFileError: err });
-    //   } else {
-    //   }
-    // });
-    // ///
 
     const response = await faceapiService.detect(file.data);
 
