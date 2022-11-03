@@ -5,10 +5,15 @@ const dotenv = require('dotenv');
 const fileUpload = require("express-fileupload");
 const faceapiService = require('./faceapiService');
 const { matchFace } = require('./faceapiService');
-const e = require('express');
-const { saveFile } = require('./saveFile');
-const { btoa } = require('buffer');
 const fs = require('fs');
+
+const db = require('./db');
+const EntryModel = require('./db-models/EntryModel');
+
+
+
+
+db.connect()
 
 
 const MAX_ROLL = 23
@@ -116,6 +121,7 @@ app.post("/image-upload", async (req, res) => {
         if (approved) {
           console.log("approved face")
           io.emit("approved", { approved: true })
+          await saveImageFile(file)
         }
 
       }
@@ -160,3 +166,25 @@ const port = process.env.PORT || 4000
 server.listen(port, () => {
   console.log('listening socket microservice on port ' + port);
 });
+
+
+
+const saveImageFile = async (imageFile) => {
+  console.log('starting save image to db')
+
+  const encode_img = imageFile.data.toString('base64');
+
+  const imageModel = {
+    name: imageFile.name,
+    data: encode_img
+  }
+
+
+  const model = new EntryModel()
+  model.image = imageModel
+  // model.temperature = temperature
+
+  await model.save()
+
+  console.log('image saved in db!');
+}

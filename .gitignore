@@ -7,7 +7,7 @@
 /node_modules
 /.pnp
 .pnp.js
-.env
+# .env
 package-lock.json
 pnpm-lock.yaml
 
