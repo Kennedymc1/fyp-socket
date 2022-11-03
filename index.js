@@ -137,7 +137,7 @@ app.post("/image-upload", async (req, res) => {
         //todo scan through banned images in database to check for a face match
         if (approved) {
           console.log("approved face")
-          const saved = await saveImageFile({ imageFile: file, result: response.result })
+          const saved = await saveImageFile({ imageFile: file, result: response.result, age, gender })
 
           if (saved) {
             io.emit("approved", { approved: true })
@@ -209,7 +209,7 @@ const isBanned = async ({ result }) => {
   return isBanned
 }
 
-const saveImageFile = async ({ imageFile, result }) => {
+const saveImageFile = async ({ imageFile, result, age, gender }) => {
 
   // first check if the recent entry is of the same user
   const mostRecentEntry = await EntryModel.find().sort({ _id: -1 }).limit(1);
@@ -234,6 +234,8 @@ const saveImageFile = async ({ imageFile, result }) => {
 
     const model = new EntryModel()
     model.image = imageModel
+    model.age = age
+    model.gender = gender
     // model.temperature = temperature
 
     await model.save()

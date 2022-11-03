@@ -7,7 +7,9 @@ const schema = mongoose.Schema({
 		contentType: String
 	},
 	temperature: String,
-	banned: Boolean
+	banned: Boolean,
+	age: String,
+	gender: String
 });
 
 const model = mongoose.model('entries', schema);
