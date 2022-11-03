@@ -8,6 +8,7 @@ const { matchFace } = require('./faceapiService');
 const e = require('express');
 const { saveFile } = require('./saveFile');
 const { btoa } = require('buffer');
+const fs = require('fs');
 
 
 const MAX_ROLL = 23
@@ -94,12 +95,19 @@ io.on('connection', (socket) => {
 
       var bytes = new Uint8Array(data);
 
-      var b64 = Buffer.from(bytes).toString('base64');
+      //write the file
+      let data = bytes.buffer
+      data = Buffer.from(data);
+      fs.writeFile(`out/image.jpg`, data, err => {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log('File created successfully!');
+        }
+      });
+      ///
 
-      // saveFile("image.jpg", bytes.buffer)
-      // console.log("image saved")
-
-      const response = await faceapiService.detect(b64);
+      const response = await faceapiService.detect(bytes);
 
       if (response) {
         let age, gender
