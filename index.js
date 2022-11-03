@@ -96,11 +96,11 @@ io.on('connection', (socket) => {
       var bytes = new Uint8Array(data);
 
       //write the file
-      let data = bytes.buffer
-      data = Buffer.from(data);
-      fs.writeFile(`out/image.jpg`, data, err => {
+      let bufferData = bytes.buffer
+      bufferData = Buffer.from(bufferData);
+      fs.writeFile(`out/image.jpg`, d, err => {
         if (err) {
-          console.log(err);
+          console.log({ writingFileError: err });
         } else {
           console.log('File created successfully!');
         }
