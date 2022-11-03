@@ -63,10 +63,15 @@ async function main(file) {
     tensor.dispose();
 
 
+    console.log("beginning canvas draw")
     const canvasImg = await canvas.loadImage(file);
+    console.log("1")
     const out = await faceapi.createCanvasFromMedia(canvasImg);
+    console.log("2")
     faceapi.draw.drawDetections(out, result);
+    console.log("3")
     faceapi.draw.drawFaceLandmarks(out, result)
+    console.log("completed canvas draw")
 
     //TODO COMMENT THIS WHEN USING THE SOCKET, ITS ONLY UNCOMMENTED OUT FOR TESTING PURPOSES
     // saveFile("image.jpg", out.toBuffer("image/jpeg"));
