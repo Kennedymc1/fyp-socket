@@ -85,26 +85,51 @@ io.on('connection', (socket) => {
   socket.on("liveStream", async (data) => {
     try {
       console.log("received stream")
+
       var bytes = new Uint8Array(data);
 
-      const result = await faceapiService.detect(bytes);
+      const response = await faceapiService.detect(bytes);
 
       let age, gender
 
-      if (result.length == 1) {
-        age = result[0].age
-        gender = result[0].gender
+
+      if (response.result.length == 1) {
+        const face = response.result[0]
+        age = face.age
+        gender = face.gender
+
+        let approved = true
+        if (angle.roll > MAX_ROLL || angle.roll < MIN_ROLL) {
+          console.log("wrong roll " + angle.roll)
+          approved = false
+        }
+
+        if (angle.yaw > MAX_YAW || angle.yaw < MIN_YAW) {
+          console.log("wrong yaw " + angle.yaw)
+          approved = false
+        }
+
+        if (angle.pitch > MAX_PITCH || angle.pitch < MIN_PITCH) {
+          console.log("wrong pitch " + angle.pitch)
+          approved = false
+        }
+
+        //todo scan through banned images in database to check for a face match
+        if (approved) {
+          console.log("approved face")
+          io.emit("approved", { approved: true })
+        }
 
       }
 
       io.emit('faceData', {
-        detectedFaces: result.length,
+        detectedFaces: response.result.length,
         age,
         gender
       })
 
       //send the same data out
-      io.emit('showStream', result.image)
+      io.emit('showStream', response.image)
 
     } catch (e) {
       console.log({ e })
