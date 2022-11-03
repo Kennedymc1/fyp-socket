@@ -32,19 +32,18 @@ async function detect(tensor) {
 }
 
 async function main(file) {
-    console.log("FaceAPI single-process test");
 
     await faceapi.tf.setBackend("tensorflow");
     await faceapi.tf.enableProdMode();
     await faceapi.tf.ENV.set("DEBUG", false);
     await faceapi.tf.ready();
 
-    console.log(
-        `Version: TensorFlow/JS ${faceapi.tf?.version_core} FaceAPI ${faceapi.version.faceapi
-        } Backend: ${faceapi.tf?.getBackend()}`
-    );
+    // console.log(
+    //     `Version: TensorFlow/JS ${faceapi.tf?.version_core} FaceAPI ${faceapi.version.faceapi
+    //     } Backend: ${faceapi.tf?.getBackend()}`
+    // );
 
-    console.log("Loading FaceAPI models");
+    // console.log("Loading FaceAPI models");
     const modelPath = path.join(__dirname, modelPathRoot);
     await faceapi.nets.ssdMobilenetv1.loadFromDisk(modelPath);
     await faceapi.nets.ageGenderNet.loadFromDisk(modelPath);
@@ -69,9 +68,9 @@ async function main(file) {
     faceapi.draw.drawDetections(out, result);
     faceapi.draw.drawFaceLandmarks(out, result)
 
-    //TODO COMMENT THIS WHEN USING THE SOCKET, ITS ONLY COMMENTED OUT FOR TESTING PURPOSES
-    saveFile("image.jpg", out.toBuffer("image/jpeg"));
-    console.log(`done, saved results to`);
+    //TODO COMMENT THIS WHEN USING THE SOCKET, ITS ONLY UNCOMMENTED OUT FOR TESTING PURPOSES
+    // saveFile("image.jpg", out.toBuffer("image/jpeg"));
+    // console.log(`done, saved results to`);
 
     return {
         result,
