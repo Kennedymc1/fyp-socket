@@ -120,6 +120,8 @@ io.on('connection', (socket) => {
           age = face.age
           gender = face.gender
 
+          const angle = face.angle
+          
           let approved = true
           if (angle.roll > MAX_ROLL || angle.roll < MIN_ROLL) {
             console.log("wrong roll " + angle.roll)

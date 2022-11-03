@@ -64,17 +64,12 @@ async function main(file) {
     tensor.dispose();
 
 
-    console.log("beginning canvas draw")
     const canvasImg = await canvas.loadImage("http://ec2-18-188-141-169.us-east-2.compute.amazonaws.com/image.jpg");
-    console.log("1")
     const out = await faceapi.createCanvasFromMedia(canvasImg);
-    console.log("2")
     faceapi.draw.drawDetections(out, result);
-    console.log("3")
     faceapi.draw.drawFaceLandmarks(out, result)
-    console.log("completed canvas draw")
 
-    saveFile("image.jpg", out.toBuffer("image/jpeg"));
+    // saveFile("image.jpg", out.toBuffer("image/jpeg"));
 
     return {
         result,
