@@ -45,11 +45,15 @@ app.post("/upload", async (req, res) => {
   }
 });
 
-app.get("/trigger", async (req, res) => {
-  io.emit("trigger", { trigger: true })
-  res.send("triggered")
+app.get("/denied", async (req, res) => {
+  io.emit("denied", { denied: true })
+  res.send("denied")
 });
 
+app.get("/approved", async (req, res) => {
+  io.emit("approved", { approved: true })
+  res.send("approved")
+});
 
 dotenv.config({ path: '../.env' });
 
