@@ -104,5 +104,6 @@ const matchFace = async ({ existingImage, result }) => {
 }
 module.exports = {
     detect: main,
-    matchFace
+    matchFace,
+    image
 };

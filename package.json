@@ -11,6 +11,9 @@
   "license": "ISC",
   "dependencies": {
     "@tensorflow/tfjs-node": "^3.21.1",
+    "@tensorflow-models/blazeface": "0.0.5",
+    "@tensorflow/tfjs": "^2.0.1",
+    "@tensorflow/tfjs-data": "^2.0.1",
     "@vladmandic/face-api": "^1.7.6",
     "canvas": "^2.10.2",
     "dotenv": "^16.0.2",

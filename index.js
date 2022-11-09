@@ -6,10 +6,11 @@ const fileUpload = require("express-fileupload");
 const faceapiService = require('./faceapiService');
 const { matchFace } = require('./faceapiService');
 const fs = require('fs');
-
 const db = require('./db');
 const EntryModel = require('./db-models/EntryModel');
+const SettingsModel = require('./db-models/SettingsModel');
 
+const { detectFaceMask } = require('./faceMask')
 
 
 
@@ -92,6 +93,13 @@ const io = require("socket.io")(server, {
 });
 
 
+app.post("/facemask", async (req, res) => {
+  const { file } = req.files;
+  const facemask = await detectFaceMask(file.data)
+
+  res.send(facemask)
+})
+
 app.post("/image-upload", async (req, res) => {
   const { file } = req.files;
 
@@ -132,6 +140,19 @@ app.post("/image-upload", async (req, res) => {
         if (banned) {
           approved = false
           io.emit("denied", { denied: true })
+        }
+
+        //check if its facemask mode
+        const settings = await SettingsModel.findOne({ masterEmail: 'test@gmail.com' })
+
+        if (settings.facemaskMode && approved) {
+          console.log("facemask mode enabled")
+          age = null
+          const faceMaskResponse = await detectFaceMask(file.data)
+          console.log({ faceMaskResponse })
+          if (faceMaskResponse.withMask < 0.8) {
+            approved = false
+          }
         }
 
         //todo scan through banned images in database to check for a face match
@@ -217,12 +238,29 @@ const saveImageFile = async ({ imageFile, result, age, gender }) => {
   const buffer = Buffer.from(mostRecentEntry[0].image.data, 'base64');
   const faceMatch = await matchFace({ existingImage: buffer, result })
 
-  console.log({ faceMatch })
+  let performSave = false
 
   if (faceMatch && faceMatch._distance <= MATCH_MAX_LIMIT) {
-    console.log("face matches most recent entry")
-    return false
-  } else {
+
+    //check if the most recent entry is within 20 seconds ago 
+    var timestamp = mostRecentEntry[0]._id.toString().substring(0, 8);
+    var createdOn = new Date(parseInt(timestamp, 16) * 1000);
+    //compare seconds
+    const diff = Date.now() - createdOn.getTime()
+    const hours = diff / 1000
+    const secondsAgo = Math.round(hours)
+
+    console.log({ secondsAgo })
+
+    if (secondsAgo > 20) {
+      performSave = true
+    } else {
+      console.log("face matches most recent entry")
+      return false
+    }
+  }
+
+  if (performSave) {
 
     const encode_img = imageFile.data.toString('base64');
 
