@@ -264,7 +264,7 @@ const saveImageFile = async ({ imageFile, result, age, gender }) => {
 
   if (performSave) {
 
-    const encode_img = imageFile.data.toString('base64');
+    const encode_img = fs.readFileSync('./out/image.jpg', { encoding: 'base64' });
 
     console.log("2")
 
