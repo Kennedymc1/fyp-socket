@@ -232,13 +232,19 @@ const isBanned = async ({ result }) => {
 
 const saveImageFile = async ({ imageFile, result, age, gender }) => {
 
+  console.log("1")
   // first check if the recent entry is of the same user
   const mostRecentEntry = await EntryModel.find().sort({ _id: -1 }).limit(1);
+  console.log("2")
 
   const buffer = Buffer.from(mostRecentEntry[0].image.data, 'base64');
+  console.log("3")
+
   const faceMatch = await matchFace({ existingImage: buffer, result })
+  console.log("4")
 
   let performSave = false
+  console.log("5")
 
   if (faceMatch && faceMatch._distance <= MATCH_MAX_LIMIT) {
 
@@ -259,6 +265,7 @@ const saveImageFile = async ({ imageFile, result, age, gender }) => {
       return false
     }
   }
+  console.log("6")
 
   if (performSave) {
 
@@ -269,6 +276,7 @@ const saveImageFile = async ({ imageFile, result, age, gender }) => {
       data: encode_img
     }
 
+    console.log("7")
 
     const model = new EntryModel()
     model.image = imageModel
@@ -276,8 +284,11 @@ const saveImageFile = async ({ imageFile, result, age, gender }) => {
     model.gender = gender
     // model.temperature = temperature
 
+  console.log("8")
+
     await model.save()
 
+    
     console.log('image saved in db!');
     return true
   }
