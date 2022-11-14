@@ -298,5 +298,7 @@ const saveImageFile = async ({ imageFile, result, age, gender }) => {
 
     console.log('image saved in db!');
     return true
+  } else {
+    console.log("dont save")
   }
 }
