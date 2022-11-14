@@ -5,7 +5,6 @@ const dotenv = require('dotenv');
 const fileUpload = require("express-fileupload");
 const faceapiService = require('./faceapiService');
 const { matchFace } = require('./faceapiService');
-const fs = require('fs');
 const db = require('./db');
 const EntryModel = require('./db-models/EntryModel');
 const SettingsModel = require('./db-models/SettingsModel');
@@ -15,7 +14,6 @@ const { detectFaceMask } = require('./faceMask')
 
 const { getFileData } = require('./utils/fileUtil');
 const axios = require('axios');
-const { Console } = require('console');
 
 
 
@@ -169,11 +167,8 @@ app.post("/image-upload", async (req, res) => {
         if (approved) {
           console.log("approved face")
           console.log("before")
+          io.emit("approved", { approved: true })
           const saved = await saveImageFile({ imageFile: file, result: response.result, age, gender })
-
-          if (saved) {
-            io.emit("approved", { approved: true })
-          }
         }
 
       }
