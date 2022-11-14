@@ -9,11 +9,13 @@ const fs = require('fs');
 const db = require('./db');
 const EntryModel = require('./db-models/EntryModel');
 const SettingsModel = require('./db-models/SettingsModel');
+const path = require("path");
 
 const { detectFaceMask } = require('./faceMask')
 
 const { getFileData } = require('./utils/fileUtil');
 const axios = require('axios');
+const { Console } = require('console');
 
 
 
@@ -250,7 +252,8 @@ const saveImageFile = async ({ imageFile, result, age, gender }) => {
   let performSave = false
 
   if (mostRecentEntry.length > 0) {
-    await downloadImage(mostRecentEntry[0].image)
+    const res = await downloadImage(mostRecentEntry[0].image)
+    console.log({ res })
     const existingImageBuffer = fs.readFileSync('out/download.jpg')
 
     faceMatch = await matchFace({ existingImage: existingImageBuffer, result })
@@ -307,7 +310,8 @@ const saveImageFile = async ({ imageFile, result, age, gender }) => {
 }
 
 const downloadImage = async (url) => {
-
+  const baseDir = path.resolve(__dirname, "./out");
+  console.log({ baseDir })
   axios({
     url,
     responseType: 'stream',
@@ -315,7 +319,7 @@ const downloadImage = async (url) => {
     response =>
       new Promise((resolve, reject) => {
         response.data
-          .pipe(fs.createWriteStream("out/download.jpg"))
+          .pipe(fs.createWriteStream(baseDir + "/download.jpg"))
           .on('finish', () => resolve())
           .on('error', e => reject(e));
       }),
