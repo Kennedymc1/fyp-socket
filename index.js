@@ -241,6 +241,7 @@ const saveImageFile = async ({ imageFile, result, age, gender }) => {
   // first check if the recent entry is of the same user
   const mostRecentEntry = await EntryModel.find().sort({ _id: -1 }).limit(1);
 
+
   let faceMatch
   let performSave = false
 
@@ -275,6 +276,8 @@ const saveImageFile = async ({ imageFile, result, age, gender }) => {
       console.log("face matches most recent entry")
       return false
     }
+  } else {
+    performSave = true
   }
   console.log("1")
 
