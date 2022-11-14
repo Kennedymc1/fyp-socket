@@ -229,9 +229,7 @@ const isBanned = async ({ result }) => {
 
   await Promise.all(
     bannedEntries.map(async (entry) => {
-      await downloadImage(entry.image)
-      const existingImageBuffer = fs.readFileSync('out/download.jpg')
-      console.log({ existingImageBuffer })
+      const existingImageBuffer = await downloadImage(entry.image)
       const faceMatch = await matchFace({ existingImage: existingImageBuffer, result })
       console.log({ faceMatch })
       if (faceMatch && faceMatch._distance <= MATCH_MAX_LIMIT) {
@@ -252,9 +250,7 @@ const saveImageFile = async ({ imageFile, result, age, gender }) => {
   let performSave = false
 
   if (mostRecentEntry.length > 0) {
-    const res = await downloadImage(mostRecentEntry[0].image)
-    console.log({ res })
-    const existingImageBuffer = fs.readFileSync('out/download.jpg')
+    const existingImageBuffer = await downloadImage(mostRecentEntry[0].image)
 
     faceMatch = await matchFace({ existingImage: existingImageBuffer, result })
     console.log({ faceMatch })
@@ -312,16 +308,13 @@ const saveImageFile = async ({ imageFile, result, age, gender }) => {
 const downloadImage = async (url) => {
   const baseDir = path.resolve(__dirname, "./out");
   console.log({ baseDir })
-  axios({
+  const response = await axios({
     url,
-    responseType: 'stream',
-  }).then(
-    response =>
-      new Promise((resolve, reject) => {
-        response.data
-          .pipe(fs.createWriteStream(baseDir + "/download.jpg"))
-          .on('finish', () => resolve())
-          .on('error', e => reject(e));
-      }),
-  );
+    responseType: 'arraybuffer'
+  })
+
+  const buffer = Buffer.from(response.data, "utf-8")
+
+  console.log({ buffer })
+  return buffer
 }
