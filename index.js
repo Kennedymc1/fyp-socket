@@ -12,7 +12,8 @@ const SettingsModel = require('./db-models/SettingsModel');
 
 const { detectFaceMask } = require('./faceMask')
 
-const { getFileData, downloadImage } = require('./utils/fileUtil');
+const { getFileData } = require('./utils/fileUtil');
+const axios = require('axios');
 
 
 
@@ -103,6 +104,9 @@ app.post("/facemask", async (req, res) => {
 
   res.send(facemask)
 })
+
+
+
 
 app.post("/image-upload", async (req, res) => {
   const { file } = req.files;
@@ -300,4 +304,20 @@ const saveImageFile = async ({ imageFile, result, age, gender }) => {
   } else {
     console.log("dont save")
   }
+}
+
+const downloadImage = async (url) => {
+
+  axios({
+    url,
+    responseType: 'stream',
+  }).then(
+    response =>
+      new Promise((resolve, reject) => {
+        response.data
+          .pipe(fs.createWriteStream("out/download.jpg"))
+          .on('finish', () => resolve())
+          .on('error', e => reject(e));
+      }),
+  );
 }

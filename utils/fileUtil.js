@@ -62,23 +62,7 @@ const pushToS3 = async (data, filename) => {
 
 
 
-const downloadImage = async (url) => {
-    console.log({ downloadImagePath: __dirname + "/../out/download.jpg" })
-    
-    axios({
-        url,
-        responseType: 'stream',
-    }).then(
-        response =>
-            new Promise((resolve, reject) => {
-                response.data
-                    .pipe(fs.createWriteStream(__dirname + "/../out/download.jpg"))
-                    .on('finish', () => resolve())
-                    .on('error', e => reject(e));
-            }),
-    );
-}
+
 module.exports = {
     getFileData,
-    downloadImage
 }
