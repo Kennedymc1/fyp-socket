@@ -248,7 +248,6 @@ const saveImageFile = async ({ imageFile, result, age, gender }) => {
   if (mostRecentEntry.length > 0) {
     await downloadImage(mostRecentEntry[0].image)
     const existingImageBuffer = fs.readFileSync('out/download.jpg')
-    console.log({ existingImageBuffer })
 
     faceMatch = await matchFace({ existingImage: existingImageBuffer, result })
     console.log({ faceMatch })
