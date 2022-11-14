@@ -1,11 +1,7 @@
 const mongoose = require('mongoose');
 
 const schema = mongoose.Schema({
-	image: {
-		name: String,
-		data: String,
-		contentType: String
-	},
+	image: String,
 	temperature: String,
 	banned: Boolean,
 	age: String,
