@@ -153,6 +153,8 @@ app.post("/image-upload", async (req, res) => {
         //check if its facemask mode
         const settings = await SettingsModel.findOne({ masterEmail: 'test@gmail.com' })
 
+        console.log({ settings })
+
         if (settings.facemaskMode && approved) {
           console.log("facemask mode enabled")
           age = null
