@@ -158,7 +158,7 @@ app.post("/image-upload", async (req, res) => {
           age = null
           const faceMaskResponse = await detectFaceMask(file.data)
           console.log({ faceMaskResponse })
-          if (faceMaskResponse.withMask < 0.8) {
+          if (faceMaskResponse.withMask < 80) {
             console.log("doesnt have facemask")
             io.emit("denied", { denied: true })
             approved = false
