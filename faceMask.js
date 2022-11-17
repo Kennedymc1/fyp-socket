@@ -42,10 +42,8 @@ const detectFaceMask = async (imageData) => {
   t.resized = tf.image.resizeBilinear(t.decoded, [224, 224]);
   t.expanded = tf.expandDims(t.resized, 0);
 
-  console.log(t)
   try {
     const predictions = await getPrediction(t.expanded);
-    console.log({ predictions })
     const withMask = Math.floor(predictions[0] * 1000) / 10
     const withoutMask = Math.floor(predictions[1] * 1000) / 10
 
