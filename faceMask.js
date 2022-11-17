@@ -8,6 +8,7 @@ async function loadMaskDetectionModel() {
   await tf.loadLayersModel('file://./facemask-models/model.json').then(m => {
     maskDetectionModel = m;
     console.log("mask detection model loaded");
+
   });
 }
 
@@ -36,17 +37,23 @@ const detectFaceMask = async (imageData) => {
 
   // const tensor = await image(imageData);
   const t = {}; // container that will hold all tensor variables
-  t.decoded = tf.node.decodeJpeg(imageData);
+  t.decoded = tf.node.decodeImage(imageData);
+  t.decoded = t.decoded.cast('float32').div(255)
   t.resized = tf.image.resizeBilinear(t.decoded, [224, 224]);
   t.expanded = tf.expandDims(t.resized, 0);
 
+  console.log(t)
+  try {
+    const predictions = await getPrediction(t.expanded);
+    console.log({ predictions })
+    const withMask = Math.floor(predictions[0] * 1000) / 10
+    const withoutMask = Math.floor(predictions[1] * 1000) / 10
 
-  const predictions = await getPrediction(t.expanded);
-  const withMask = Math.floor(predictions[0] * 1000) / 10
-  const withoutMask = Math.floor(predictions[1] * 1000) / 10
 
-
-  return { withMask, withoutMask }
+    return { withMask, withoutMask }
+  } catch (e) {
+    console.log(e)
+  }
 }
 
 module.exports = { detectFaceMask };

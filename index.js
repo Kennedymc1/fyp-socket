@@ -239,7 +239,6 @@ const isBanned = async ({ result }) => {
 }
 
 const saveImageFile = async ({ imageFile, result, age, gender }) => {
-  console.log('start')
   // first check if the recent entry is of the same user
   const mostRecentEntry = await EntryModel.find().sort({ _id: -1 }).limit(1);
 
@@ -251,7 +250,6 @@ const saveImageFile = async ({ imageFile, result, age, gender }) => {
     const existingImageBuffer = await downloadImage(mostRecentEntry[0].image)
 
     faceMatch = await matchFace({ existingImage: existingImageBuffer, result })
-    console.log({ faceMatch })
 
   } else {
     //no most recent entries
@@ -259,9 +257,7 @@ const saveImageFile = async ({ imageFile, result, age, gender }) => {
   }
 
 
-  console.log("before perform save")
   if ((faceMatch && faceMatch._distance <= MATCH_MAX_LIMIT)) {
-    console.log("most recent match")
     //check if the most recent entry is within 20 seconds ago 
     var timestamp = mostRecentEntry[0]._id.toString().substring(0, 8);
     var createdOn = new Date(parseInt(timestamp, 16) * 1000);
@@ -281,12 +277,9 @@ const saveImageFile = async ({ imageFile, result, age, gender }) => {
   } else {
     performSave = true
   }
-  console.log("1")
 
   if (performSave) {
-    console.log('start retrieving imageFile')
     const { filepath } = await getFileData(imageFile)
-    console.log("2")
 
     const model = new EntryModel()
     model.image = filepath
