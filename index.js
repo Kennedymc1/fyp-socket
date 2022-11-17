@@ -184,6 +184,7 @@ app.post("/image-upload", async (req, res) => {
 
       //send the same data out
       io.emit('showStream', response.image)
+      console.log("showStream emitted")
     } else {
       console.log("image null")
     }
