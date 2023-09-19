@@ -3,8 +3,8 @@ const axios = require('axios');
 const fs = require('fs');
 
 const s3 = new AWS.S3({
-    accessKeyId: "AKIA2DSQK5JIJ6XWDH4V",
-    secretAccessKey: "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"
+    accessKeyId: "; AKIAYFRZYUGMI7C4NA72",
+    secretAccessKey: "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"
 });
 /**
  * get the data of a file as a string in utf8 format
@@ -53,7 +53,7 @@ const pushToS3 = async (data, filename) => {
         Body: data.data,
         ContentEncoding: data.encoding,
         ContentType: data.mimetype,
-        Bucket: 'fyp-mundia',
+        Bucket: 'fyp-kennedy',
     };
     const response = await s3.upload(params).promise();
     // console.log(response, "check response in callback")

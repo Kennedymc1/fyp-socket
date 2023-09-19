@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 exports.connect = () => {
-    const dbUrl = 'mongodb://dev:QyXzZWbVc4TTI6D2@cluster1-shard-00-00.hktaw.mongodb.net:27017,cluster1-shard-00-01.hktaw.mongodb.net:27017,cluster1-shard-00-02.hktaw.mongodb.net:27017/fyp?ssl=true&replicaSet=atlas-nba93o-shard-0&authSource=admin&retryWrites=true&w=majority';
+    const dbUrl = 'mongosh "mongodb+srv://kennedychanda:mwenyakc@cluster0.hipglub.mongodb.net/?retryWrites=true&w=majority" --apiVersion 1 --username kennedychanda';
     mongoose.connect(dbUrl, { useNewUrlParser: true, useUnifiedTopology: true });
 
     mongoose.connection.on('error', (err) => console.log(err));
