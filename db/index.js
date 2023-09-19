@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 exports.connect = () => {
-    const dbUrl = 'mongodb+srv://kennedychanda:mwenyakc@cluster0.hipglub.mongodb.net/?retryWrites=true&w=majority';
+    const dbUrl = 'mongodb+srv://kennedychanda:kennedychanda@cluster0.hipglub.mongodb.net/?retryWrites=true&w=majority';
 
     mongoose.connect(dbUrl, { useNewUrlParser: true, useUnifiedTopology: true });
 
